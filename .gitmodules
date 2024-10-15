@@ -1,0 +1,3 @@
+[submodule "velosiraptor"]
+	path = velosiraptor
+	url = https://github.com/ubc-systopia/velosiraptor.git
