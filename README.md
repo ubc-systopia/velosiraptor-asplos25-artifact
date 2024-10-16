@@ -36,7 +36,8 @@ $ git submodule update --init --recursive
 On Ubuntu, you can install the dependencies using the following command:
 
 ```bash
-$ sudo apt-get install gcc make qemu-system-x86 python3
+$ sudo apt-get update
+$ sudo apt-get install gcc make qemu-system-x86 python3 curl wget unzip git flex bison libssl-dev bc libelf-dev
 ```
 
 **3. Install Docker**
@@ -49,6 +50,7 @@ Follow the instructions on [Rustup.rs](https://rustup.rs/) to install Rust.
 
 ```
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
 ```
 
 **4. Install SMT Solver**
@@ -133,7 +135,7 @@ in the search space towards the right hand side of the table.
 This part of the evaluation uses the Arm Fast Models Simulator. Note, that **this requires a license**
 and the Fast Models sources.
 
-**Part 1: Running the Experiment**
+**Part 1: Generating the Hardware Components**
 
 Given the license requirements, we provide a test that generates the hardware code and runs it throug
 a compiler with stubbed Fast Models dependencies.
@@ -146,7 +148,8 @@ This should take a few minutes on an Intel Xeon Silver 4310 CPU @ 2.10GHz.
 
 **Part 1: Expected Results**
 
-For each of the units, the test should print:
+For each of the units, the test should print the following, indicating that the compilation of
+the hardware module was successful.
 
 ```bash
 Generate and Check: examples/mpu.vrs.vrs
@@ -158,9 +161,36 @@ The generated files are in the `velosiraptor/out/examples_hwgen_fastmodels/<UNIT
 where the `src` contains the generated code, and `build` contains a library that is the compiled
 hardware component that will be linked with the Fast Models.
 
-**Part 2: Running the Experiment**
+**Part 2: Building the Simulators**
 
-**Part 2: Expected Results
+Note, that building the simulators requires the Arm FastModels to be installed and the license to
+be available.
+
+```
+# setup the FastModels environment for building
+source <PATH/TO/FastModels>/etc/setup_all.sh
+```
+
+This should take a few minutes on an Intel Xeon Silver 4310 CPU @ 2.10GHz.
+
+**Part 3: Expected Results**
+
+The expected result is that the platform simulation binaries are successful generated.
+
+
+
+**Part 3: Running the Emulated Binaries**
+
+Note, that running the simulation requires the Arm FastModels license to be available.
+
+```
+$(PLATFORM_BIN) --data Memory0=bootimg.bin@0x0
+```
+
+
+**Part 2: Expected Results**
+
+
 
 ----------------------------------------------------------------------------------------------------
 
