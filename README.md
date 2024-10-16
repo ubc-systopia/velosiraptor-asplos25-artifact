@@ -39,7 +39,9 @@ On Ubuntu, you can install the dependencies using the following command:
 $ sudo apt-get install gcc make qemu-system-x86 python3
 ```
 
+**3. Install Docker**
 
+Install docker by follwing the [instructions](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository).
 
 **3. Install Rust**
 
@@ -170,16 +172,87 @@ system.
 
 **Additional Dependencies**
 
-This requires KVM to be enabled and the user to have sudo privileges or be part of the KVM group.
+This requires:
+ * KVM to be enabled and the user to have sudo privileges or be part of the KVM group.
+ * Docker to be installed and the user to have sudo privileges or be part of the docker group.
 
 **Running the Experiment**
 
+```
+cd velosiraptor
+cargo test --test codegen --  --nocapture
+```
 
+This should generate the relevant C files for integration into the Barrelfish OS.
+The output should look like this:
+
+```
+test examples_codegen_c ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.11s
+```
+
+For integration into the Barrelfish OS, copy the generated files into the `barrelfish` directory:
+```bash
+# in the artifact root directory
+rsync -avz velosiraptor/out/barrelfish_user/x86_64_pagetable/sw/clang/* barrelfish/usr/vspace/velosiraptor/
+rsync -avz velosiraptor/out/barrelfish_kernel/x86_64_pagetable/sw/clang/* barrelfish/kernel/include/velosiraptor
+rsync -avz velosiraptor/out/monolythic/x86_64_pagetable/sw/clang/* barrelfish/kernel/include/velosiraptor-monolyth
+```
+
+Now we can build and run the Barrelfish OS.
+
+```bash
+# from the artifact root directory
+$ cd barrelfish
+# drop into the docker container
+$ bash tools/bfdocker.sh
+$ mkdir build
+$ cd build
+$ ../hake/hake.sh -s ../ -a x86_64
+$ make X86_64_Basic -j
+# exit the docker container
+$ exit
+```
+
+Next we can boot Barrelfish. For this, navigate into the build directory.
+```bash
+# from the artifact root directory
+$ cd barrelfish/build
+$ ../tools/qemu-wrapper.sh --menu ../hake/menu.lst.x86_64 --arch x86_64
+```
 
 **Expected Results**
 
 The following output should be seen on the terminal.
 ```bash
+vspace.0.0: $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+vspace.0.0: Velosiraptor Test: Starting
+vspace.0.0: $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+vspace.0.0: Velosiraptor Test: Successfully booted with Velosiraptor mapping handlers in cpudriver
+vspace.0.0: $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+vspace.0.0: Velosiraptor Test: Mapping the frame at address 0x20000000000
+vspace.0.0: $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+vspace.0.0: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+vspace.0.0: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+vspace.0.0: Velosiraptor Test: accessing memory...
+vspace.0.0: *addr = 0
+vspace.0.0: *addr = 42
+vspace.0.0: *addr = 42
+vspace.0.0: Velosiraptor Test: Successfully exercised user-space mappings
+vspace.0.0: $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+vspace.0.0: Velosiraptor Test: Exercising Monolythic Mappings
+vspace.0.0: $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+vspace.0.0: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+vspace.0.0: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+vspace.0.0: Velosiraptor Test: accessing memory...
+vspace.0.0: *addr = 42
+vspace.0.0: *addr = 43
+vspace.0.0: *addr = 43
+vspace.0.0: Velosiraptor Test: Successfully exercised monolithic mappings
+vspace.0.0: $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+vspace.0.0: Velosiraptor Test: Successfull
+vspace.0.0: $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ```
 
 ----------------------------------------------------------------------------------------------------
