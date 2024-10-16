@@ -14,8 +14,8 @@ gramming Languages and Operating Systems(ASPLOS ’25), March
 
 ## Supported Platforms
 
-For running the artifact a x86-64 server with Ubuntu 24.04 LTS is required.
-Other platforms might work, but are not tested.
+For running the artifact a single-socket x86-64 server with Ubuntu 24.04 LTS is required.
+Other platforms might work too, but are not tested.
 
 
 ## Preparation
@@ -24,13 +24,24 @@ To prepare the artifact, please follow the following instructions.
 
 **1. Initialize the Submodules**
 
-The repository contains a set of submodules that pull in the required dependencies. To initialize the submodules, run the following commands:
+The repository contains a set of submodules that pull in the required dependencies. To initialize
+the submodules, run the following commands:
 
 ```bash
 $ git submodule update --init --recursive
 ```
 
-**2. Install Rust**
+**2. Install Dependencies**
+
+On Ubuntu, you can install the dependencies using the following command:
+
+```bash
+$ sudo apt-get install gcc make qemu-system-x86 python3
+```
+
+
+
+**3. Install Rust**
 
 Follow the instructions on [Rustup.rs](https://rustup.rs/) to install Rust.
 
@@ -38,7 +49,7 @@ Follow the instructions on [Rustup.rs](https://rustup.rs/) to install Rust.
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-**3. Install SMT Solver**
+**4. Install SMT Solver**
 
 Install Z3 version 4.10.2.
 
@@ -72,17 +83,22 @@ cd velosiraptor
 cargo bench --bench synth
 ```
 
-This will run 100 iterations of synthesis for each of the specifications, which will take some time.
+This will run 100 iterations of synthesis for each of the specifications plus 100 iterations of
+compiling the Linux kernel. Note, that will take more than 4 hours on an Intel Xeon Silver 4310 CPU @ 2.10GHz.
 
-**TODO: add a quick option here**
+If you want to run a version of the experiment with fewer iterations, you can run the following command:
 
-The expected duration is less than one minute on an Intel Xeon Silver 4310 CPU @ 2.10GHz.
+```bash
+cd velosiraptor
+cargo bench --bench synth -- --smoke
+```
+The expected duration for this should be around 15 minutes on an Intel Xeon Silver 4310 CPU @ 2.10GHz.
 
 
 **Expected Results**
-
-The script will produce a table that should correspond to Table 1 in the paper. Note, this
-results depend on.
+The script will produce a table that should correspond to Table 1 in the paper. Note, this result
+significantly depends on the performance and characteristics of the hardware, that you are running on, in particular the number of cores and the memory bandwidth. Especially for the more complex
+specifications, this can lead to differences in the synthesis time.
 
 ----------------------------------------------------------------------------------------------------
 
@@ -103,7 +119,6 @@ The expected duration is less than one minute on an Intel Xeon Silver 4310 CPU @
 
 
 **Expected Results**
-
 The script will print a Latex table that should match Table 2 in the paper showing a decrease
 in the search space towards the right hand side of the table.
 
@@ -113,18 +128,37 @@ in the search space towards the right hand side of the table.
 
 **Additional Requirements**
 
-This part of the evaluation uses the Arm Fast Models Simulator, which requires a license.
+This part of the evaluation uses the Arm Fast Models Simulator. Note, that **this requires a license**
+and the Fast Models sources.
 
-**Running the Experiment**
+**Part 1: Running the Experiment**
+
+Given the license requirements, we provide a test that generates the hardware code and runs it throug
+a compiler with stubbed Fast Models dependencies.
 
 ```bash
 cd velosiraptor
-cargo bench --bench runtime
+cargo test --test fastmodels -- --nocapture
 ```
+This should take a few minutes on an Intel Xeon Silver 4310 CPU @ 2.10GHz.
 
-**Expected Runtime**
+**Part 1: Expected Results**
 
-**Expected Results**
+For each of the units, the test should print:
+
+```bash
+Generate and Check: examples/mpu.vrs.vrs
+  - Parsing mpu                                      ... ok
+  - generate hardware module (fast models)...  ok
+  - Compiling hardware module ...  ok
+```
+The generated files are in the `velosiraptor/out/examples_hwgen_fastmodels/<UNIT>/hw/fastmodels` directory,
+where the `src` contains the generated code, and `build` contains a library that is the compiled
+hardware component that will be linked with the Fast Models.
+
+**Part 2: Running the Experiment**
+
+**Part 2: Expected Results
 
 ----------------------------------------------------------------------------------------------------
 
@@ -134,11 +168,19 @@ cargo bench --bench runtime
 The claim for this evaluation is that Velosiraptor code can be integrated into a real operating
 system.
 
+**Additional Dependencies**
+
+This requires KVM to be enabled and the user to have sudo privileges or be part of the KVM group.
+
 **Running the Experiment**
 
-**Expected Runtime**
+
 
 **Expected Results**
+
+The following output should be seen on the terminal.
+```bash
+```
 
 ----------------------------------------------------------------------------------------------------
 
