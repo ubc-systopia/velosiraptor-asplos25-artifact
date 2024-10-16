@@ -1,3 +1,6 @@
 [submodule "velosiraptor"]
 	path = velosiraptor
 	url = https://github.com/ubc-systopia/velosiraptor.git
+[submodule "barrelfish"]
+	path = barrelfish
+	url = https://github.com/achreto/barrelfish.git
