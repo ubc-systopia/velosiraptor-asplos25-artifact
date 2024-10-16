@@ -37,7 +37,11 @@ On Ubuntu, you can install the dependencies using the following command:
 
 ```bash
 $ sudo apt-get update
-$ sudo apt-get install gcc make qemu-system-x86 python3 curl wget unzip git flex bison libssl-dev bc libelf-dev
+$ sudo apt-get install bc binutils bison curl dwarves flex gcc g++ git gnupg2 gzip libelf-dev \
+               libncurses5-dev libssl-dev make openssl pahole perl-base python3 qemu-system-x86 \
+               rsync tar unzip wget xz-utils
+
+
 ```
 
 **3. Install Docker**
