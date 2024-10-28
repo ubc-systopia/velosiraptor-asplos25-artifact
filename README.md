@@ -20,7 +20,9 @@ Other platforms might work too, but are not tested.
 
 ## Preparation
 
-To prepare the artifact, please follow the following instructions.
+To prepare the artifact, please follow the following instructions to install dependencies and
+setup the required submodules.
+
 
 **1. Initialize the Submodules**
 
@@ -30,6 +32,8 @@ the submodules, run the following commands:
 ```bash
 $ git submodule update --init --recursive
 ```
+Note, the submodules themselves have submodules, so you need the `--recursive` flag.
+
 
 **2. Install Dependencies**
 
@@ -40,13 +44,13 @@ $ sudo apt-get update
 $ sudo apt-get install bc binutils bison curl dwarves flex gcc g++ git gnupg2 gzip libelf-dev \
                libncurses5-dev libssl-dev make openssl pahole perl-base python3 qemu-system-x86 \
                rsync tar unzip wget xz-utils
-
-
 ```
+
 
 **3. Install Docker**
 
-Install docker by follwing the [instructions](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository).
+Install docker by following the [instructions](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository).
+
 
 **3. Install Rust**
 
@@ -57,19 +61,26 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source $HOME/.cargo/env
 ```
 
+Note, it's best to add `source $HOME/.cargo/env` to your `.bashrc` or `.zshrc` file.
+
+
 **4. Install SMT Solver**
 
 Install Z3 version 4.10.2.
 
-To install the Z3 solver, follow the following instructions on the [Z3 Github Release Page](https://github.com/Z3Prover/z3/releases/tag/z3-4.10.2), and make it accessible in the path.
+To install the Z3 solver, follow the following instructions on the
+[Z3 Github Release Page](https://github.com/Z3Prover/z3/releases/tag/z3-4.10.2), and make it
+accessible by adding the directory to your `PATH` environment variable.
 
-You can use the following script to automate the installation. Make sure you are making Z3 available
-in the path.
+You can use the following script to automate the installation:
 
 ```bash
 $ bash ./tools/download-z3.sh
 export PATH=`pwd`:$PATH
 ```
+
+Make sure you are making Z3 available in your path every time you open a new terminal.
+
 
 ## Evaluation of the Paper
 
@@ -105,8 +116,11 @@ The expected duration for this should be around 15 minutes on an Intel Xeon Silv
 
 **Expected Results**
 The script will produce a table that should correspond to Table 1 in the paper. Note, this result
-significantly depends on the performance and characteristics of the hardware, that you are running on, in particular the number of cores and the memory bandwidth. Especially for the more complex
+significantly depends on the performance and characteristics of the hardware, that you are running
+on, in particular the number of cores and the memory bandwidth available. Especially for the more complex
 specifications, this can lead to differences in the synthesis time.
+
+Also note, that if you are running the `--smoke` version you may see a higher variance in the results.
 
 ----------------------------------------------------------------------------------------------------
 
@@ -141,14 +155,17 @@ and the Fast Models sources.
 
 **Part 1: Generating the Hardware Components**
 
-Given the license requirements, we provide a test that generates the hardware code and runs it throug
-a compiler with stubbed Fast Models dependencies.
+Given the license requirements, we provide a test that generates the hardware code and runs it through
+a compiler with stubbed Fast Models dependencies. This produces the library implementing the
+translation hardware functionality and this library is being linked with the Arm FastModels to
+produce the platform simulator.
 
 ```bash
 cd velosiraptor
 cargo test --test fastmodels -- --nocapture
 ```
 This should take a few minutes on an Intel Xeon Silver 4310 CPU @ 2.10GHz.
+
 
 **Part 1: Expected Results**
 
@@ -162,15 +179,19 @@ Generate and Check: examples/mpu.vrs.vrs
   - Compiling hardware module ...  ok
 ```
 The generated files are in the `velosiraptor/out/examples_hwgen_fastmodels/<UNIT>/hw/fastmodels` directory,
-where the `src` contains the generated code, and `build` contains a library that is the compiled
-hardware component that will be linked with the Fast Models.
+where the `src` contains the generated code, and `build` contains a library (`*.a` file) that is the
+compiled hardware component that will be linked with the Fast Models.
+
 
 **Part 2: Building the Simulators**
 
-Note, that building the simulators requires the Arm FastModels to be installed and the license to
-be available.
+This and the subsequent steps for this part of the evaluation requires the Arm FastModels licenses
+to build and run the simulator.
 
-```
+**NOTE: UNFORTUNATELY OUR LICENSE EXPIRED. WE ARE WORKING ON GETTING A NEW ONE. THIS ALSO MEANS
+THE FOLLOWING STEPS HAVE NOT BEEN TESTED.**
+
+```bash
 # setup the FastModels environment for building
 source <PATH/TO/FastModels>/etc/setup_all.sh
 ```
@@ -187,13 +208,22 @@ The expected result is that the platform simulation binaries are successful gene
 
 Note, that running the simulation requires the Arm FastModels license to be available.
 
-```
+```bash
 $(PLATFORM_BIN) --data Memory0=bootimg.bin@0x0
 ```
 
 
 **Part 2: Expected Results**
 
+The expected results for this part of the evaluation is that the mini boot image executes and that
+the simulator prints memory accesses.
+
+Sample output as follows:
+```bash
+# not actual output
+[Unit] read access.
+[Unit] wirte access.
+```
 
 
 ----------------------------------------------------------------------------------------------------
@@ -207,8 +237,9 @@ system.
 **Additional Dependencies**
 
 This requires:
- * KVM to be enabled and the user to have sudo privileges or be part of the KVM group.
- * Docker to be installed and the user to have sudo privileges or be part of the docker group.
+ * KVM to be enabled and the user to have `sudo` privileges or be part of the KVM group.
+ * Docker to be installed and the user to have `sudo` privileges or be part of the docker group.
+
 
 **Running the Experiment**
 
@@ -311,5 +342,3 @@ The expected duration is less than one minute on an Intel Xeon Silver 4310 CPU @
 The script will print a Latex table that should be similar to Table 3 in the paper.
 In particular, the lines "Linux"/"Velosiraptor and "Barrelfish"/"Velosiraptor" should show the
 same performance +/- 1ns.
-
-**TODO: replace arbutus with \system**
