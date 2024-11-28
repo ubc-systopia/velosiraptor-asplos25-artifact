@@ -4,3 +4,6 @@
 [submodule "barrelfish"]
 	path = barrelfish
 	url = https://github.com/achreto/barrelfish.git
+[submodule "arm-fastmodels-boot"]
+	path = arm-fastmodels-boot
+	url = https://github.com/achreto/arm-fastmodels-boot.git
