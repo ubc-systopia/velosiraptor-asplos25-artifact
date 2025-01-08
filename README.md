@@ -30,7 +30,7 @@ The repository contains a set of submodules that pull in the required dependenci
 the submodules, run the following command:
 
 ```bash
-$ git submodule update --init --recursive
+git submodule update --init --recursive
 ```
 Note, the submodules themselves have submodules, so you need the `--recursive` flag to set these
 up properly.
@@ -41,10 +41,10 @@ up properly.
 On Ubuntu, you can install the dependencies using the following command:
 
 ```bash
-$ sudo apt-get update
-$ sudo apt-get install bc binutils bison curl dwarves flex gcc g++ git gnupg2 gzip libelf-dev \
-               libncurses5-dev libssl-dev make openssl pahole perl-base python3 qemu-system-x86 \
-               rsync tar unzip wget xz-utils
+sudo apt-get update
+sudo apt-get install bc binutils bison curl dwarves flex gcc g++ git gnupg2 gzip libelf-dev \
+           libncurses5-dev libssl-dev make openssl pahole perl-base python3 qemu-system-x86 \
+           rsync tar unzip wget xz-utils gcc-aarch64-linux-gnu
 ```
 
 Note: this basically includes the build dependencies for building the Linux kernel.
@@ -420,22 +420,22 @@ Now we can build and run the Barrelfish OS.
 
 ```bash
 # from the artifact root directory
-$ cd barrelfish
+cd barrelfish
 # drop into the docker container
-$ bash tools/bfdocker.sh
-$ mkdir -p build
-$ cd build
-$ ../hake/hake.sh -s ../ -a x86_64
-$ make X86_64_Basic -j
+bash tools/bfdocker.sh
+mkdir -p build
+cd build
+../hake/hake.sh -s ../ -a x86_64
+make X86_64_Basic -j
 # exit the docker container
-$ exit
+exit
 ```
 
 Next we can boot Barrelfish. For this, navigate into the build directory.
 ```bash
 # from the artifact root directory
-$ cd barrelfish/build
-$ ../tools/qemu-wrapper.sh --menu ../hake/menu.lst.x86_64 --arch x86_64
+cd barrelfish/build
+../tools/qemu-wrapper.sh --menu ../hake/menu.lst.x86_64 --arch x86_64
 ```
 
 **Expected Results**
