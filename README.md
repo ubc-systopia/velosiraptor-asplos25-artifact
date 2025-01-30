@@ -55,7 +55,7 @@ Note: this basically includes the build dependencies for building the Linux kern
 Install docker by following the official [instructions on the docker website](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository).
 
 
-**3. Install Rust**
+**4. Install Rust**
 
 Follow the instructions on [Rustup.rs](https://rustup.rs/) to install Rust. For example, through
 the install script:
@@ -69,7 +69,7 @@ Note: it's best to add `source $HOME/.cargo/env` to your `.bashrc`/`.zshrc`/... 
 automatically sourced.
 
 
-**4. Install SMT Solver**
+**5. Install SMT Solver**
 
 Install Z3 version `4.10.2` (other versions might work too, but are not tested).
 
@@ -88,7 +88,7 @@ export PATH=`pwd`:$PATH
 Make sure you are making Z3 available in your path every time you open a new terminal by adding
 this path in your `.bashrc`/`.zshrc`/... file.
 
-**5. Install the Arm Fast Models 11.15**
+**6. Install the Arm Fast Models 11.15**
 
 For the simulated hardware components, we use the Arm Fast Models 11.15. This requires a license
 and must be obtained from [Arm directly](https://developer.arm.com/Tools%20and%20Software/Fast%20Models).
