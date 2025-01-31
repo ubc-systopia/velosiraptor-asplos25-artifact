@@ -193,6 +193,10 @@ If you don't have the license setup properly, you will see something like this w
 ```
 Error: license error: License checkout for feature FM_Simulator with version 11.15 has been denied by Flex back-end. Error code: -1
 ```
+or 
+```
+!! SimGen not found. Did you source the Fast Models environment? e.g., `source $HOME/bin/arm/FastModelsTools_11.15/source_all.sh` !!
+```
 
 **Part 1: Generating the Hardware Components**
 
