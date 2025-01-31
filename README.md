@@ -188,7 +188,7 @@ and the Fast Models sources. Then make sure you are sourcing the Fast Models env
 source $HOME/bin/arm/FastModelsTools_11.15/source_all.sh
 ```
 
-If you don't have the license setup properly, you will see something like:
+If you don't have the license setup properly, you will see something like this when attempting to build or run the simulator. 
 
 ```
 Error: license error: License checkout for feature FM_Simulator with version 11.15 has been denied by Flex back-end. Error code: -1
